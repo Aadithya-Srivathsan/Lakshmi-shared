@@ -1,0 +1,32 @@
+from openai import AzureOpenAI
+
+client = AzureOpenAI(
+    azure_endpoint="https://learning-openai.openai.azure.com/",
+    api_key="YOUR_KEY_HERE",
+    api_version="2025-01-01-preview"
+)
+
+print("welcome to chatbot!")
+
+while True:
+    msg = input("you: ")
+    if msg == "quit":
+        break
+
+    # NEW Responses API
+    response = client.responses.create(
+        model="gpt-4o-mini",    # use your deployment/model name
+        input=[
+            {"role": "user", "content": msg}
+        ]
+    )
+
+    # Extract output text
+    reply = ""
+    for output in response.output:
+        if output.type == "message":
+            for content in output.content:
+                if content.type == "text":
+                    reply += content.text
+
+    print("bot:", reply)
