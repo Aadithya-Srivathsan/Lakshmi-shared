@@ -1,0 +1,29 @@
+import os
+import azure.functions as func
+from openai import OpenAI
+
+app = func.FunctionApp()
+
+# Expect these as app settings:
+# AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY, AZURE_OPENAI_DEPLOYMENT, OPENAI_API_VERSION
+
+_client = OpenAI(
+    base_url = f"{os.environ['AZURE_OPENAI_ENDPOINT'].rstrip('/')}/openai/v1",
+    api_key  = os.environ["AZURE_OPENAI_API_KEY"],  # or use AAD token provider for MSI
+)
+
+@app.function_name(name="Chat")
+@app.route(route="chat", methods=["POST"])
+def chat(req: func.HttpRequest) -> func.HttpResponse:
+    body = req.get_json(silent=True) or {}
+    messages = body.get("messages") or [{"role": "user", "content": body.get("prompt", "Hello")}]
+
+    deployment = os.environ["AZURE_OPENAI_DEPLOYMENT"]
+    # Standard Chat Completions call against Azure OpenAI
+    completion = _client.chat.completions.create(
+               model = deployment,
+        messages = messages,
+        temperature = body.get("temperature", 0.2),
+    )
+
+    txt = completion.choices[0].message.content
