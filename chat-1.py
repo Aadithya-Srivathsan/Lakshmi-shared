@@ -40,3 +40,8 @@ while True:
                     reply += c.text
 
     print("bot:", reply)
+
+
+
+
+Import "azure.functions" could not be resolved
