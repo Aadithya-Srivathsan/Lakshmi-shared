@@ -1,0 +1,68 @@
+import os
+import json
+import logging
+
+import azure.functions as func
+from openai import AzureOpenAI
+
+# Read settings from environment variables (set via Terraform app_settings)
+AZURE_ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT")
+AZURE_API_KEY = os.environ.get("AZURE_OPENAI_API_KEY")
+AZURE_API_VERSION = os.environ.get("OPENAI_API_VERSION", "2025-03-01-preview")
+AZURE_MODEL = os.environ.get("AZURE_OPENAI_DEPLOYMENT")
+
+# Initialize Azure OpenAI client
+client = AzureOpenAI(
+    azure_endpoint=AZURE_ENDPOINT,
+    api_key=AZURE_API_KEY,
+    api_version=AZURE_API_VERSION,
+)
+
+# Python v2 model
+app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+
+
+@app.function_name(name="ChatBot")
+@app.route(route="chat", methods=["POST"])
+def chat(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        # Safely read JSON body
+        try:
+            body = req.get_json()
+        except ValueError:
+            body = {}
+
+        user_msg = body.get("message")
+        if not user_msg:
+            return func.HttpResponse(
+                json.dumps({"error": "Request body must contain 'message' field"}),
+                status_code=400,
+                mimetype="application/json"
+            )
+
+        # Call Azure OpenAI Responses API
+        response = client.responses.create(
+            model=AZURE_MODEL,
+            input=[{"role": "user", "content": user_msg}],
+        )
+
+        # Extract reply text
+        try:
+            reply = response.output[0].content[0].text
+        except Exception:
+            # Fallback if structure is different
+            reply = str(response)
+
+        return func.HttpResponse(
+            json.dumps({"reply": reply}),
+            status_code=200,
+            mimetype="application/json"
+        )
+
+    except Exception as e:
+        logging.exception("Error in ChatBot function")
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json"
+        )
