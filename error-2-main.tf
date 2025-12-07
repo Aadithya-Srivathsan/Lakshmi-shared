@@ -1,0 +1,9 @@
+PS C:\Users\lakshmig2\Desktop\project-root\infra> terraform validate
+╷
+│ Error: Invalid operation
+│
+│   on main.tf line 158, in resource "azurerm_key_vault_access_policy" "func_policy":
+│  158:   object_id    = azurerm_linux_function_app.func.identity.principal_id   
+│
+│ Block type "identity" is represented by a list of objects, so it must be       
+│ indexed using a numeric key, like .identity[0].
