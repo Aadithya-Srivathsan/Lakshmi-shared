@@ -1,0 +1,11 @@
+PS C:\Users\lakshmig2> az --version
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/__main__.py", line 13, in <module>
+  File "D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/core/telemetry.py", line 19, in <module>
+  File "D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\azure/cli/telemetry/__init__.py", line 9, in <module>
+  File "D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\portalocker/__init__.py", line 4, in <module>
+  File "D:\a\_work\1\s\build_scripts\windows\artifacts\cli\Lib\site-packages\portalocker/portalocker.py", line 11, in <module>
+ImportError: DLL load failed while importing win32file: The specified module could not be found.
+PS C:\Users\lakshmig2>
