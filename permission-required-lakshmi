@@ -1,0 +1,29 @@
+Required Permission
+az provider register --namespace Microsoft.Web
+az provider register --namespace Microsoft.Storage
+az provider register --namespace Microsoft.KeyVault
+az provider register --namespace Microsoft.Insights
+az provider register --namespace Microsoft.EventHub
+
+
+Resource	Provider Needed
+azurerm_resource_group	      Microsoft.Resources
+azurerm_storage_account	      Microsoft.Storage
+azurerm_key_vault	            Microsoft.KeyVault
+azurerm_service_plan	        Microsoft.Web
+azurerm_linux_function_app	  Microsoft.Web
+azurerm_application_insights	Microsoft.Insights
+azurerm_key_vault_secret	    Microsoft.KeyVault
+
+
+Hi, I am using Terraform to deploy Azure resources (Function App, Key Vault, Storage, Insights).
+Since I only have Contributor permission, Terraform cannot auto-register Resource Providers.
+Can you please run the following commands once on the subscription?
+
+az provider register --namespace Microsoft.Web
+az provider register --namespace Microsoft.Storage
+az provider register --namespace Microsoft.KeyVault
+az provider register --namespace Microsoft.Insights
+az provider register --namespace Microsoft.EventHub
+
+
