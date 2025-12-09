@@ -1,0 +1,13 @@
+provider "azurerm" {
+  features {
+    resource_group {
+      # Allows terraform destroy even if alert rules exist
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+
+  # For azurerm v3.x: disable auto provider registration
+  skip_provider_registration = true
+}
+
+data "azurerm_client_config" "current" {}
