@@ -1,0 +1,16 @@
+ Error: creating App Service Plan (Subscription: "08b45153-8a8b-4480-88e4-0c0406cdee1b"
+│ Resource Group Name: "genaifunction-rg"
+│ Server Farm Name: "genaifunction-plan"): performing CreateOrUpdate: unexpected status 403 (403 Forbidden) with error: AuthorizationFailed: The client 'lakshmig2@godevsuite200.onmicrosoft.com' with object id '5204b986-997a-45b2-8a1a-5322d77fa86b' does not have authorization to perform action 'Microsoft.Web/serverFarms/write' over scope '/subscriptions/08b45153-8a8b-4480-88e4-0c0406cdee1b/resourceGroups/genaifunction-rg/providers/Microsoft.Web/serverFarms/genaifunction-plan' or the scope is invalid. If access was recently granted, please refresh your credentials.
+│
+│   with azurerm_service_plan.plan,
+│   on main.tf line 28, in resource "azurerm_service_plan" "plan":
+│   28: resource "azurerm_service_plan" "plan" {
+│
+│ creating App Service Plan (Subscription: "08b45153-8a8b-4480-88e4-0c0406cdee1b"
+│ Resource Group Name: "genaifunction-rg"
+│ Server Farm Name: "genaifunction-plan"): performing CreateOrUpdate: unexpected status 403 (403 Forbidden) with error:   
+│ AuthorizationFailed: The client 'lakshmig2@godevsuite200.onmicrosoft.com' with object id
+│ '5204b986-997a-45b2-8a1a-5322d77fa86b' does not have authorization to perform action 'Microsoft.Web/serverFarms/write'  
+│ over scope
+│ '/subscriptions/08b45153-8a8b-4480-88e4-0c0406cdee1b/resourceGroups/genaifunction-rg/providers/Microsoft.Web/serverFarms/genaifunction-plan'
+│ or the scope is invalid. If access was recently granted, please refresh your credentials.
