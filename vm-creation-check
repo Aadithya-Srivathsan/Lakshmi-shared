@@ -1,0 +1,7 @@
+az vm create \
+  --resource-group genaifunction-rg \
+  --name tg-test-vm \
+  --image UbuntuLTS \
+  --admin-username azureuser \
+  --generate-ssh-keys \
+  --size Standard_B1s
