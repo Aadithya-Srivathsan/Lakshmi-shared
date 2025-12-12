@@ -1,0 +1,58 @@
+My Sandbox Deployment Plan & Milestones: GenAI Chatbot on Azure Functions + Azure OpenAI + Terraform
+I will deploy the GenAI chatbot end-to-end in my own Azure sandbox. This plan covers creating all resources from scratch (Resource Group, Storage Account, Function App with Managed Identity, Key Vault + secrets, Application Insights), configuring app settings, deploying code, and validating with smoke tests.
+1) What I will deliver
+• A new Azure Resource Group for the sandbox.
+• A Linux Consumption Function App (Python) with System-Assigned Managed Identity.
+• A Storage Account for Function runtime.
+• Azure Key Vault with OpenAI secrets and access policy for the Function App identity.
+• Application Insights wired to the Function App.
+• Deployed function code exposing /api/respond using Azure OpenAI Responses API.
+• Tests, monitoring, rollback, and a diagram of the architecture.
+2) Scope I am focusing on
+• Provision all infrastructure with Terraform (RG, Storage, Service Plan, Function App, Key Vault, App Insights).
+• Configure app settings via Key Vault references.
+• Deploy code from VS Code or Azure DevOps Pipelines (optional).
+3) My step-by-step plan (phases)
+Phase 1 — Create sandbox RG & naming
+• Pick name prefix (e.g., lakshmi-gpt-sbx) and region (Central India or South India)
+• Terraform: resource group + random suffix for global resources
+Phase 2 — Core runtime infra
+• Terraform: storage account (for Functions), service plan (Y1 Consumption, Linux)
+• Terraform: Linux Function App with System-Assigned Managed Identity
+Phase 3 — Observability
+• Terraform: Application Insights and app settings linkage
+Phase 4 — Security: Key Vault
+• Terraform: Key Vault, secrets (OpenAI endpoint, key, deployment, API version)
+• Terraform: access policy for Function App identity
+Phase 5 — App configuration
+• Add Key Vault references into Function App settings
+• Verify env values through logs
+Phase 6 — Code deploy & test
+• Deploy function_app.py via VS Code → Deploy to Function App
+• Test GET and POST endpoints; validate responses
+• Add negative tests (missing input, bad key)
+Phase 7 — Operate & handoff
+• Create rollback notes (redeploy previous build)
+• Rotate secrets procedure
+• Share architecture diagram + documentation
+4) Milestones & dates
+Milestone	Owner	Target Date	Sign-off Criteria
+Sandbox RG created	Me	12 Dec 2025	RG visible in portal
+Core infra (Storage, Plan, Function)	Me	13 Dec 2025	Function App created; MI enabled
+Observability wired	Me	14 Dec 2025	App Insights receiving logs
+Key Vault + secrets + policy	Me	15 Dec 2025	Secrets present; MI policy set
+App settings configured	Me	16 Dec 2025	KV references added; restart done
+Code deployed	Me	17 Dec 2025	Route responds; 200 on hello
+Docs & diagram shared	Me	18 Dec 2025	Plan + diagram delivered
+5) Risks & mitigations
+• Naming collisions for global resources → Use random suffix; check availability
+• Wrong OpenAI config → Add logging; verify env; fail fast with clear 500
+• Function app auth/exposure → Keep http_auth_level ANONYMOUS for testing; later restrict with APIM or auth
+• KV references not resolving → Restart app; confirm identity has get/list secret permissions
+6) Checklist I will follow
+[ ] Terraform applied (RG, SA, Plan, Function, KV, AI)
+[ ] Managed Identity principal ID noted
+[ ] KV secrets created (endpoint, key, deployment, api version)
+[ ] App settings reference KV secrets
+[ ] Code deployed and tested (GET/POST)
+[ ] App Insights shows requests and dependencies
