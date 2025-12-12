@@ -1,0 +1,119 @@
+Deployment Plans Comparison
+Before (Existing Resources) vs After (Sandbox Full Infra)
+Prepared by: G. Lakshmi
+Job Title: Consultant
+Date: 12 Dec 2025
+
+Aspect	Before (Existing Resources)	After (Sandbox Full Infra)
+Resource Strategy	Use existing RG & Function App	Create new RG, Function App, Storage, AI
+Infra Creation	Minimal (KV only)	Full infra via Terraform
+Terraform Scope	Key Vault + secrets + access policy	RG, Storage, Plan, Function, KV, AI
+Deployment Method	VS Code deploy to existing app	VS Code or CI/CD to new app
+Key Vault Usage	Secrets only for OpenAI config	Secrets + full access policy for MI
+Milestone Duration	Approx. 3-4 days	Approx. 6-7 days
+
+Part 1: Detailed Plan and Milestones (Before - Existing Resources)
+My Plan & Milestones: GenAI Chatbot on Azure Functions + Azure OpenAI + Terraform
+I created a simple, practical plan that I can follow end-to-end. This covers coding the Azure Function, setting up Key Vault and secrets via Terraform, configuring app settings, deploying from VS Code, and testing.
+1) What I will deliver
+• A working HTTP endpoint /api/respond that returns answers from Azure OpenAI Responses API.
+• Key Vault with secrets (endpoint, api key, deployment, api version) and access policy for Function App managed identity.
+• Clear deployment steps and smoke tests.
+• Simple monitoring and rollback notes.
+2) Scope I am focusing on
+• Use the existing Resource Group and Function App (no infra creation beyond Key Vault + secrets).
+• Python v2 Functions model with function_app.py.
+• Terraform only for Key Vault + secrets + access policy.
+• VS Code one-click deploy.
+3) My step-by-step plan (phases)
+Phase 1 — Prepare (local dev)
+• Set up Python env and install dependencies: azure-functions, openai
+• Verify function_app.py has env reads for AZURE_OPENAI_* variables
+• Confirm existing Function App name and managed identity object ID
+Phase 2 — Build the function API
+• Implement GET/POST handlers (/api/respond) in function_app.py
+• Add basic logging and helpful 400 error message for missing input
+• Run locally using func start and test with curl/httpie
+Phase 3 — Terraform: Key Vault + secrets + access policy
+• Write main.tf to create Key Vault, set secrets, and grant MI access
+• Run terraform init && terraform apply
+• Capture output: KV URI and secret URIs
+Phase 4 — Configure Function App
+• Add Key Vault references in Function App → Configuration
+• Restart Function App
+• Confirm env values load via logs
+Phase 5 — Deploy code
+• Deploy from VS Code (right-click folder → Deploy to Function App)
+• Verify function appears and route is active
+Phase 6 — Test
+• GET https://<app>.azurewebsites.net/api/respond?q=hello
+• POST with {"input": "hello"} and validate response
+• Add quick negative tests (missing input, bad key)
+Phase 7 — Operate
+• Enable Application Insights logging
+• Document rollback (redeploy previous build / disable KV references)
+• Create a simple runbook for secrets rotation
+4) Milestones I am tracking
+5) Risks I am watching and how I will handle them
+• Missing permissions for Key Vault/access policy → Use existing Function App + MI; request RBAC if needed; scope Terraform to KV only
+• OpenAI settings wrong (endpoint/model/key) → Log env values, return clear errors, double-check secret names
+• Dependency issues in Azure Functions → Pin versions in requirements.txt; restart app after config changes
+• Function not visible/triggering → Ensure function.json and correct route; redeploy from VS Code
+6) My quick checklist
+[ ] Terraform applied (KV + secrets + access policy)
+[ ] Function App configuration uses Key Vault references
+[ ] Deployed latest function_app.py
+[ ] Tested GET and POST
+[ ] Logs show model + endpoint
+[ ] App Insights capturing requests
+Part 2: Detailed Plan and Milestones (After - Sandbox Full Infra)
+My Sandbox Deployment Plan & Milestones: GenAI Chatbot on Azure Functions + Azure OpenAI + Terraform
+I will deploy the GenAI chatbot end-to-end in my own Azure sandbox. This plan covers creating all resources from scratch (Resource Group, Storage Account, Function App with Managed Identity, Key Vault + secrets, Application Insights), configuring app settings, deploying code, and validating with smoke tests.
+1) What I will deliver
+• A new Azure Resource Group for the sandbox.
+• A Linux Consumption Function App (Python) with System-Assigned Managed Identity.
+• A Storage Account for Function runtime.
+• Azure Key Vault with OpenAI secrets and access policy for the Function App identity.
+• Application Insights wired to the Function App.
+• Deployed function code exposing /api/respond using Azure OpenAI Responses API.
+• Tests, monitoring, rollback, and a diagram of the architecture.
+2) Scope I am focusing on
+• Provision all infrastructure with Terraform (RG, Storage, Service Plan, Function App, Key Vault, App Insights).
+• Configure app settings via Key Vault references.
+• Deploy code from VS Code or Azure DevOps Pipelines (optional).
+3) My step-by-step plan (phases)
+Phase 1 — Create sandbox RG & naming
+• Pick name prefix (e.g., lakshmi-gpt-sbx) and region (Central India or South India)
+• Terraform: resource group + random suffix for global resources
+Phase 2 — Core runtime infra
+• Terraform: storage account (for Functions), service plan (Y1 Consumption, Linux)
+• Terraform: Linux Function App with System-Assigned Managed Identity
+Phase 3 — Observability
+• Terraform: Application Insights and app settings linkage
+Phase 4 — Security: Key Vault
+• Terraform: Key Vault, secrets (OpenAI endpoint, key, deployment, API version)
+• Terraform: access policy for Function App identity
+Phase 5 — App configuration
+• Add Key Vault references into Function App settings
+• Verify env values through logs
+Phase 6 — Code deploy & test
+• Deploy function_app.py via VS Code → Deploy to Function App
+• Test GET and POST endpoints; validate responses
+• Add negative tests (missing input, bad key)
+Phase 7 — Operate & handoff
+• Create rollback notes (redeploy previous build)
+• Rotate secrets procedure
+• Share architecture diagram + documentation
+4) Milestones & dates
+5) Risks & mitigations
+• Naming collisions for global resources → Use random suffix; check availability
+• Wrong OpenAI config → Add logging; verify env; fail fast with clear 500
+• Function app auth/exposure → Keep http_auth_level ANONYMOUS for testing; later restrict with APIM or auth
+• KV references not resolving → Restart app; confirm identity has get/list secret permissions
+6) Checklist I will follow
+[ ] Terraform applied (RG, SA, Plan, Function, KV, AI)
+[ ] Managed Identity principal ID noted
+[ ] KV secrets created (endpoint, key, deployment, api version)
+[ ] App settings reference KV secrets
+[ ] Code deployed and tested (GET/POST)
+[ ] App Insights shows requests and dependencies
