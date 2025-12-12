@@ -1,0 +1,61 @@
+My Plan & Milestones: GenAI Chatbot on Azure Functions + Azure OpenAI + Terraform
+I created a simple, practical plan that I can follow end-to-end. This covers coding the Azure Function, setting up Key Vault and secrets via Terraform, configuring app settings, deploying from VS Code, and testing.
+1) What I will deliver
+• A working HTTP endpoint /api/respond that returns answers from Azure OpenAI Responses API.
+• Key Vault with secrets (endpoint, api key, deployment, api version) and access policy for Function App managed identity.
+• Clear deployment steps and smoke tests.
+• Simple monitoring and rollback notes.
+2) Scope I am focusing on
+• Use the existing Resource Group and Function App (no infra creation beyond Key Vault + secrets).
+• Python v2 Functions model with function_app.py.
+• Terraform only for Key Vault + secrets + access policy.
+• VS Code one-click deploy.
+3) My step-by-step plan (phases)
+Phase 1 — Prepare (local dev)
+• Set up Python env and install dependencies: azure-functions, openai
+• Verify function_app.py has env reads for AZURE_OPENAI_* variables
+• Confirm existing Function App name and managed identity object ID
+Phase 2 — Build the function API
+• Implement GET/POST handlers (/api/respond) in function_app.py
+• Add basic logging and helpful 400 error message for missing input
+• Run locally using func start and test with curl/httpie
+Phase 3 — Terraform: Key Vault + secrets + access policy
+• Write main.tf to create Key Vault, set secrets, and grant MI access
+• Run terraform init && terraform apply
+• Capture output: KV URI and secret URIs
+Phase 4 — Configure Function App
+• Add Key Vault references in Function App → Configuration
+• Restart Function App
+• Confirm env values load via logs
+Phase 5 — Deploy code
+• Deploy from VS Code (right-click folder → Deploy to Function App)
+• Verify function appears and route is active
+Phase 6 — Test
+• GET https://<app>.azurewebsites.net/api/respond?q=hello
+• POST with {"input": "hello"} and validate response
+• Add quick negative tests (missing input, bad key)
+Phase 7 — Operate
+• Enable Application Insights logging
+• Document rollback (redeploy previous build / disable KV references)
+• Create a simple runbook for secrets rotation
+4) Milestones I am tracking
+Milestone	Owner	Target Date	Sign-off Criteria
+Prep complete (env + repo)	Me	Day 1	Dependencies installed; function runs locally
+Function API ready	Me	Day 2	GET/POST endpoints return valid text
+Terraform applied	Me	Day 3	KV created; secrets present; MI access policy set
+App settings configured	Me	Day 3	Key Vault references added; app restarted
+Code deployed	Me	Day 4	Function visible in portal; route responds
+Smoke tests passed	Me	Day 4	200 responses for hello; error handling works
+Ops notes done	Me	Day 5	App Insights enabled; rollback + rotation documented
+5) Risks I am watching and how I will handle them
+• Missing permissions for Key Vault/access policy → Use existing Function App + MI; request RBAC if needed; scope Terraform to KV only
+• OpenAI settings wrong (endpoint/model/key) → Log env values, return clear errors, double-check secret names
+• Dependency issues in Azure Functions → Pin versions in requirements.txt; restart app after config changes
+• Function not visible/triggering → Ensure function.json and correct route; redeploy from VS Code
+6) My quick checklist
+[ ] Terraform applied (KV + secrets + access policy)
+[ ] Function App configuration uses Key Vault references
+[ ] Deployed latest function_app.py
+[ ] Tested GET and POST
+[ ] Logs show model + endpoint
+[ ] App Insights capturing requests
